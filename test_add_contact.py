@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import unittest
-
 from contact import Contact
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 from test_add_group import login, open_home_page, logout
 
 
 def create_contact(wd, contact):
-    wd.find_element_by_link_text("add new").click()
     wd.find_element_by_name("firstname").click()
     wd.find_element_by_name("firstname").clear()
     wd.find_element_by_name("firstname").send_keys(contact.firstname)
@@ -79,22 +78,35 @@ def create_contact(wd, contact):
     wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
 
 
+def open_contact_page(wd):
+    wd.find_element_by_link_text("add new").click()
+
+
+def return_to_home_page(wd):
+    wd.find_element_by_link_text("home page").click()
+
+
 class TestAddContact(unittest.TestCase):
     def setUp(self):
         self.wd = webdriver.Firefox()
         self.wd.implicitly_wait(30)
 
-    def add_contact(self):
+    def test_add_new_contact(self):
         wd = self.wd
         open_home_page(wd)
         login(wd, username="admin", password="secret")
-        create_contact(wd, Contact(firstname="First name", middlename="Middle name", lastname="Last name", nickname="Nickname",
-                       title="Title", company="Company", address="Address", address_1="Address",
-                       home_phone="Home", mobile_phone="Mobile", work_phone="Work", fax="Fax", email="Email",
-                       email_2="Email2", email_3="Email3", homepage="Homepage", b_day="2", b_month="February",
-                       b_year="2000",
-                       ann_day="5", ann_month="June", ann_year="1900", phone2="Home", notes="Notes"))
-        wd.find_element_by_link_text("home page").click()
+        open_contact_page(wd)
+        create_contact(wd, Contact(firstname="First name", middlename="Middle name", lastname="Last name", nickname="Nickname", title="Title", company="Company", address="Address", address_1="Address", home_phone="Home", mobile_phone="Mobile", work_phone="Work", fax="Fax", email="Email", email_2="Email2", email_3="Email3", homepage="Homepage", b_day="2", b_month="February", b_year="2000", ann_day="5", ann_month="June", ann_year="1900", phone2="Home", notes="Notes"))
+        return_to_home_page(wd)
+        logout(wd)
+
+    def test_add_new_empty_contact(self):
+        wd = self.wd
+        open_home_page(wd)
+        login(wd, username="admin", password="secret")
+        open_contact_page(wd)
+        create_contact(wd, Contact(firstname="", middlename="", lastname="", nickname="", title="", company="", address="", address_1="", home_phone="", mobile_phone="", work_phone="", fax="", email="", email_2="", email_3="", homepage="", b_day="", b_month="-", b_year="", ann_day="", ann_month="-", ann_year="", phone2="", notes=""))
+        return_to_home_page(wd)
         logout(wd)
 
     def tearDown(self):
