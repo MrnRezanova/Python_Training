@@ -61,20 +61,6 @@ class TestAddGroup(unittest.TestCase):
         return_to_groups_page(wd)
         logout(wd)
 
-    def is_element_present(self, how, what):
-        try:
-            self.wd.find_element(by=how, value=what)
-        except NoSuchElementException as e:
-            return False
-        return True
-
-    def is_alert_present(self):
-        try:
-            self.wd.switch_to_alert()
-        except NoAlertPresentException as e:
-            return False
-        return True
-
     def tearDown(self):
         self.wd.quit()
 
