@@ -3,7 +3,6 @@ import unittest
 
 from contact import Contact
 from selenium import webdriver
-from selenium.webdriver.support.ui import Select
 from test_add_group import login, open_home_page, logout
 
 
