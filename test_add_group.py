@@ -9,6 +9,7 @@ def open_home_page(wd):
 
 
 def login(wd, username, password):
+    open_home_page(wd)
     wd.find_element_by_name("user").clear()
     wd.find_element_by_name("user").send_keys(username)
     wd.find_element_by_name("pass").click()
@@ -22,6 +23,7 @@ def open_groups_page(wd):
 
 
 def create_group(wd, group):
+    open_groups_page(wd)
     # init group creation
     wd.find_element_by_name("new").click()
     # fill group form
@@ -36,6 +38,7 @@ def create_group(wd, group):
     wd.find_element_by_name("group_footer").send_keys(group.footer)
     # submit group creation
     wd.find_element_by_name("submit").click()
+    return_to_groups_page(wd)
 
 
 def return_to_groups_page(wd):
@@ -53,20 +56,14 @@ class TestAddGroup(unittest.TestCase):
 
     def test_add_group(self):
         wd = self.wd
-        open_home_page(wd)
         login(wd, username="admin", password="secret")
-        open_groups_page(wd)
         create_group(wd, Group(name="test group", header="leader", footer="footer"))
-        return_to_groups_page(wd)
         logout(wd)
 
     def test_add_empty_group(self):
         wd = self.wd
-        open_home_page(wd)
         login(wd, username="admin", password="secret")
-        open_groups_page(wd)
         create_group(wd, Group(name="", header="", footer=""))
-        return_to_groups_page(wd)
         logout(wd)
 
     def tearDown(self):
