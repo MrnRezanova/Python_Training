@@ -82,3 +82,13 @@ class ContactHelper:
     def open_contact_page(self):
         wd = self.app.wd
         wd.find_element_by_link_text("add new").click()
+
+    def delete_first_contact(self):
+        wd = self.app.wd
+        wd.find_element_by_name("selected[]").click()
+        wd.find_element_by_xpath("//input[@value='Delete']").click()
+        wd.switch_to_alert().accept()
+
+    def open_edit_page(self):
+        wd = self.app.wd
+        wd.find_element_by_xpath("//img[@alt='Edit']").click()
