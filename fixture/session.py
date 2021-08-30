@@ -1,5 +1,4 @@
 
-
 class SessionHelper:
     def __init__(self, app):
         self.app = app
@@ -16,4 +15,4 @@ class SessionHelper:
 
     def logout(self):
         wd = self.app.wd
-        wd.find_element_by_xpath("//div[@id='top']/form/a").click()
+        wd.find_element_by_xpath("//a[contains(text(),'Logout')]").click()
