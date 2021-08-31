@@ -16,3 +16,4 @@ class SessionHelper:
     def logout(self):
         wd = self.app.wd
         wd.find_element_by_xpath("//a[contains(text(),'Logout')]").click()
+        wd.find_element_by_name("user")
