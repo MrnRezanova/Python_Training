@@ -5,13 +5,20 @@ class ContactHelper:
     def __init__(self, app):
         self.app = app
 
-    def open_add_new_contact_page(self):
-        wd = self.app.wd
-        wd.find_element_by_link_text("add new").click()
-
     def open_contact_page(self):
         wd = self.app.wd
-        wd.find_element_by_link_text("home").click()
+        if not (wd.current_url.endswith("/addressbook/") and len(wd.find_elements_by_xpath("//input[@value='Send e-Mail']")) > 0):
+            wd.find_element_by_link_text("home").click()
+
+    def open_add_new_contact_page(self):
+        wd = self.app.wd
+        if not (wd.current_url.endswith("/edit.php") and len(wd.find_elements_by_name("submit")) > 0):
+            wd.find_element_by_link_text("add new").click()
+
+    def open_edit_page(self):
+        wd = self.app.wd
+        if not (len(wd.find_elements_by_xpath("//div[@id='content']/form/input[22]")) > 0 and len(wd.find_elements_by_xpath("//div[@id='content']/form[2]/input[2]")) > 0):
+            wd.find_element_by_xpath("//img[@alt='Edit']").click()
 
     def change_field_select_value(self, field_name, text):
         wd = self.app.wd
@@ -53,10 +60,6 @@ class ContactHelper:
         self.fill_contact_form(contact)
         wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
         self.app.return_to_home_page()
-
-    def open_edit_page(self):
-        wd = self.app.wd
-        wd.find_element_by_xpath("//img[@alt='Edit']").click()
 
     def edit_first_contact(self, contact):
         wd = self.app.wd
