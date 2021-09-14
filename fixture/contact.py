@@ -16,10 +16,10 @@ class ContactHelper:
         if not (wd.current_url.endswith("/edit.php") and len(wd.find_elements_by_name("submit")) > 0):
             wd.find_element_by_link_text("add new").click()
 
-    def open_edit_page(self):
+    def open_edit_page_by_index(self, index):
         wd = self.app.wd
         if not (len(wd.find_elements_by_xpath("//div[@id='content']/form/input[22]")) > 0 and len(wd.find_elements_by_xpath("//div[@id='content']/form[2]/input[2]")) > 0):
-            wd.find_element_by_xpath("//img[@alt='Edit']").click()
+            wd.find_elements_by_xpath("//img[@alt='Edit']")[index].click()
 
     def change_field_select_value(self, field_name, text):
         wd = self.app.wd
@@ -70,9 +70,9 @@ class ContactHelper:
     def edit_contact_by_index(self, index, contact):
         wd = self.app.wd
         self.app.open_home_page()
-        self.open_edit_page()
+        self.open_edit_page_by_index(index)
         self.fill_contact_form(contact)
-        wd.find_elements_by_xpath("//div[@id='content']/form/input[22]")[index].click()
+        wd.find_element_by_xpath("//div[@id='content']/form/input[22]").click()
         self.app.return_to_home_page()
         self.contact_cache = None
 
@@ -103,6 +103,7 @@ class ContactHelper:
             self.contact_cache = []
             for element in wd.find_elements_by_css_selector("tr")[1:]:
                 id = element.find_element_by_name("selected[]").get_attribute("value")
-                text = element.text
-                self.contact_cache.append(Contact(firstname=text.split()[1], lastname=text.split()[0], id=id))
+                firstname = element.find_elements_by_css_selector("td")[1].text
+                lastname = element.find_elements_by_css_selector("td")[2].text
+                self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id))
         return list(self.contact_cache)
