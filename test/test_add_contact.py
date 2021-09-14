@@ -3,7 +3,7 @@ from model.group import Group
 
 
 def test_add_new_contact(app):
-    contact = Contact(firstname="Firstname", lastname="Lastname")
+    contact = Contact(firstname="First name", lastname="Last name")
     old_contacts = app.contact.get_contact_list()
     app.contact.create(contact)
     assert len(old_contacts) + 1 == app.contact.count()
