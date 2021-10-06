@@ -25,10 +25,18 @@ class ContactHelper:
                 wd.find_elements_by_xpath("//div[@id='content']/form[2]/input[2]")) > 0):
             wd.find_elements_by_xpath("//img[@alt='Edit']")[index].click()
 
+    def open_edit_page_by_id(self, id):
+        wd = self.app.wd
+        self.app.open_home_page()
+        if not (len(wd.find_elements_by_xpath("//div[@id='content']/form/input[22]")) > 0 and len(
+                wd.find_elements_by_xpath("//div[@id='content']/form[2]/input[2]")) > 0):
+            wd.find_element_by_css_selector("a[href='edit.php?id=%s']" % id).click()
+
     def open_view_page_by_index(self, index):
         wd = self.app.wd
         self.app.open_home_page()
         wd.find_elements_by_xpath("//img[@alt='Details']")[index].click()
+
 
     def change_field_select_value(self, field_name, text):
         wd = self.app.wd
@@ -85,6 +93,15 @@ class ContactHelper:
         self.app.return_to_home_page()
         self.contact_cache = None
 
+    def edit_contact_by_id(self, id, contact):
+        wd = self.app.wd
+        self.app.open_home_page()
+        self.open_edit_page_by_id(id)
+        self.fill_contact_form(contact)
+        wd.find_element_by_xpath("//div[@id='content']/form/input[22]").click()
+        self.app.return_to_home_page()
+        self.contact_cache = None
+
     def delete_first_contact(self):
         wd = self.app.wd
         self.delete_contact_by_index(0)
@@ -93,6 +110,19 @@ class ContactHelper:
         wd = self.app.wd
         self.app.open_home_page()
         wd.find_elements_by_name("selected[]")[index].click()
+        wd.find_element_by_xpath("//input[@value='Delete']").click()
+        wd.switch_to_alert().accept()
+        self.open_contact_page()
+        self.contact_cache = None
+
+    def select_contact_by_id(self, id):
+        wd = self.app.wd
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+
+    def delete_contact_by_id(self, id):
+        wd = self.app.wd
+        self.app.open_home_page()
+        self.select_contact_by_id(id)
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to_alert().accept()
         self.open_contact_page()
