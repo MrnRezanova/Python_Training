@@ -38,5 +38,6 @@ class Dbfixture:
             cursor.close()
         return list
 
+
     def destroy(self):
         self.connection.close()

@@ -37,7 +37,6 @@ class ContactHelper:
         self.app.open_home_page()
         wd.find_elements_by_xpath("//img[@alt='Details']")[index].click()
 
-
     def change_field_select_value(self, field_name, text):
         wd = self.app.wd
         if text is not None:
@@ -133,6 +132,12 @@ class ContactHelper:
         self.app.open_home_page()
         return len(wd.find_elements_by_name("selected[]"))
 
+    def count_contact_in_group(self):
+        wd = self.app.wd
+        self.app.open_home_page()
+        Select(wd.find_element_by_name("group")).select_by_visible_text("[none]")
+        return len(wd.find_elements_by_name("selected[]"))
+
     contact_cache = None
 
     def get_contact_list(self):
@@ -149,7 +154,47 @@ class ContactHelper:
                 all_email = cells[4].text
                 all_phones = cells[5].text
                 self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id, address=address,
-                                                  all_phones_from_homepage=all_phones, all_email_from_homepage=all_email))
+                                                  all_phones_from_homepage=all_phones,
+                                                  all_email_from_homepage=all_email))
+        return list(self.contact_cache)
+
+    def get_contact_list_without_group(self):
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.app.open_home_page()
+            Select(wd.find_element_by_name("group")).select_by_visible_text("[all]")
+            self.contact_cache = []
+            for element in wd.find_elements_by_css_selector("tr")[1:]:
+                cells = element.find_elements_by_tag_name("td")
+                id = element.find_element_by_name("selected[]").get_attribute("value")
+                firstname = cells[2].text
+                lastname = cells[1].text
+                address = cells[3].text
+                all_email = cells[4].text
+                all_phones = cells[5].text
+                self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id, address=address,
+                                                  all_phones_from_homepage=all_phones,
+                                                  all_email_from_homepage=all_email))
+        return list(self.contact_cache)
+
+    def get_contact_with_group(self, group):
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.app.open_home_page()
+            wd.find_element_by_name("group").click()
+            Select(wd.find_element_by_name("group")).select_by_visible_text("%s" % group)
+            self.contact_cache = []
+            for element in wd.find_elements_by_css_selector("tr")[1:]:
+                cells = element.find_elements_by_tag_name("td")
+                id = element.find_element_by_name("selected[]").get_attribute("value")
+                firstname = cells[2].text
+                lastname = cells[1].text
+                address = cells[3].text
+                all_email = cells[4].text
+                all_phones = cells[5].text
+                self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id, address=address,
+                                                  all_phones_from_homepage=all_phones,
+                                                  all_email_from_homepage=all_email))
         return list(self.contact_cache)
 
     def get_contact_info_from_edit_page(self, index):
@@ -181,9 +226,12 @@ class ContactHelper:
         notes = wd.find_element_by_name("notes").get_attribute("value")
         address_1 = wd.find_element_by_name("address2").get_attribute("value")
         return Contact(firstname=firstname, id=id, middlename=middlename, lastname=lastname, home_phone=homephone,
-                       work_phone=workphone, mobile_phone=mobilephone, phone2=phone2, nickname=nickname, company=company,
-                       title=title, address=address, fax=fax, email=email, email_2=email_2, email_3=email_3, homepage=homepage,
-                       b_year=b_year, b_day=b_day, b_month=b_month,ann_day=ann_day, ann_year=ann_year, ann_month=ann_month,
+                       work_phone=workphone, mobile_phone=mobilephone, phone2=phone2, nickname=nickname,
+                       company=company,
+                       title=title, address=address, fax=fax, email=email, email_2=email_2, email_3=email_3,
+                       homepage=homepage,
+                       b_year=b_year, b_day=b_day, b_month=b_month, ann_day=ann_day, ann_year=ann_year,
+                       ann_month=ann_month,
                        notes=notes, address_1=address_1)
 
     def get_contact_from_view_page(self, index):
@@ -196,3 +244,23 @@ class ContactHelper:
         phone2 = re.search("P: (.*)", text).group(1)
         return Contact(home_phone=homephone, work_phone=workphone,
                        mobile_phone=mobilephone, phone2=phone2)
+
+    def add_contact_to_group(self, contact, group):
+        wd = self.app.wd
+        self.app.open_home_page()
+        self.open_add_new_contact_page()
+        self.fill_contact_form(contact)
+        wd.find_element_by_name("new_group").click()
+        Select(wd.find_element_by_name("new_group")).select_by_visible_text("%s" % group)
+        wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
+        self.app.return_to_home_page()
+        self.contact_cache = None
+
+    def remove_contact_from_group(self, id, group):
+        wd = self.app.wd
+        self.open_contact_page()
+        wd.find_element_by_name("group").click()
+        Select(wd.find_element_by_name("group")).select_by_visible_text("%s" % group)
+        wd.find_element_by_css_selector("input[value='%s']" % id).click()
+        wd.find_element_by_xpath("//input[@name='remove']").click()
+        self.open_contact_page()
