@@ -1,3 +1,4 @@
+import time
 from model.contact import Contact
 from model.group import Group
 import random
@@ -11,6 +12,7 @@ def test_delete_some_contact(app, db, check_ui):
     app.contact.delete_contact_by_id(contact.id)
 #    assert len(old_contacts) - 1 == app.contact.count()
     old_contacts.remove(contact)
+    time.sleep(2)
     new_contacts = db.get_contact_list()
     assert old_contacts == new_contacts
     if check_ui:
