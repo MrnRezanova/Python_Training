@@ -47,11 +47,6 @@ def db(request):
 @pytest.fixture(scope="session")
 def orm(request):
     ormfixture = ORMFixture(host="127.0.0.1", name="addressbook", user="root", password="")
-
-    def fin():
-        ormfixture.destroy()
-
-    request.addfinalizer(fin)
     return ormfixture
 
 
